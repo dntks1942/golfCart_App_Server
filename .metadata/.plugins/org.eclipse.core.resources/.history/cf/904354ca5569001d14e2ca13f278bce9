@@ -1,0 +1,13 @@
+package golfCartClient;
+
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+public class Client {
+	public static void main(String[] args) throws UnknownHostException, IOException {
+		System.out.println("socket서버에 접속대기");
+		Socket socket = new Socket("localhost.com", 1234);
+		System.out.println("socket서버에 접속완료");
+	}
+}

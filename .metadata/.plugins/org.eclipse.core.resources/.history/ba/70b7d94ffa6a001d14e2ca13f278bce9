@@ -1,0 +1,13 @@
+package receiver;
+
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Receiver extends Thread {
+    ServerSocket socket = new ServerSocket(1234);
+    System.out.println("서버 준비 완료...");
+
+    Socket usersocket = socket.accept();
+
+    System.out.println("서버의 소켓 : " + socket); // toString() 오버라이드 되어있음
+}

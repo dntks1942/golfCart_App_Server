@@ -1,0 +1,42 @@
+package golfCartServer;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server {
+	public static void main(String args[]) throws IOException {
+		int socketPort = 1234;
+		ServerSocket socket = new ServerSocket(socketPort);
+		Socket socketUser = null;
+		System.out.println("socket : " + socketPort + "으로 서버가 열렸습니다");
+		
+		while(true) {
+			socketUser = socket.accept();
+			System.out.println("Clinet가 접속함 : " + socketUser.getInetAddress());
+			
+			InputStream input = socketUser.getInputStream();
+			BufferedReader br = new BufferedReader(new InputStreamReader(input));
+			
+			String identification = br.readLine();
+			
+			OutputStream out = socketUser.getOutputStream();
+			PrintWriter pr = new PrintWriter(out,true);
+			
+			if(identification == "GOLFCART") {
+				pr.println("Server To Client");
+			}
+			else {
+				pr.println("DENY")
+			}
+			
+
+		}
+	}
+	
+}
