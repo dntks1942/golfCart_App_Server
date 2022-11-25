@@ -1,0 +1,67 @@
+package golfCartServer;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+
+
+
+public class Server {
+	public static void main(String[] args) throws IOException {
+		Listener app = new Listener("app");	
+		Listener cart = new Listener("cart");
+		app.run();
+		cart.run();
+	}
+} // class
+
+
+
+class Listener extends Thread {
+	static boolean isAppConnected = false;
+	static boolean isCartConnected = false;
+	int DevicePort;
+	ServerSocket socket;
+	
+	Listener(String device) throws IOException{
+		if(device.equals("app")) DevicePort = 1234;
+		else if(device.equals("cart")) DevicePort = 1235;
+		socket = new ServerSocket(DevicePort);
+	}
+	@Override
+	public void run() {
+		try {
+			Socket socketUser = socket.accept();
+			System.out.println("Appsocket : " + DevicePort + "으로 연결되었습니다");
+			if(DevicePort == 1234) isAppConnected = true;
+			else if(DevicePort == 1235) isCartConnected = true;
+			while(socket.isBound()) {
+				System.out.println("App가 접속함 : " + socketUser.getInetAddress());
+				getMessage(socketUser);
+			}
+			System.out.println("Appsocket : " + DevicePort + "으로 연결이 끊어졌습니다");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	void getMessage(Socket socketUser) throws IOException {
+		InputStream input = socketUser.getInputStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(input));
+		String identification = br.readLine();
+		System.out.println(identification);
+	}
+	void sendMessage(Socket socketUser) throws IOException {
+		OutputStream out = socketUser.getOutputStream();
+		PrintWriter pr = new PrintWriter(out,true);
+		Scanner s1 = new Scanner(System.in);
+		pr.println(s1.next());
+	}
+} // class

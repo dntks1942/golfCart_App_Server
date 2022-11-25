@@ -5,3 +5,5 @@
 1669185942891	Rename type 'Receiver'
 1669185958036	Rename package 'sender'
 1669185963766	Rename type 'Sender'
+1669264422954	Rename local variable 'AppPort'
+1669347753079	Rename package 'chatting'

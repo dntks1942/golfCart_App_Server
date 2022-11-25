@@ -1,21 +1,93 @@
 package golfCartServer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.Scanner;
 
-import app.App;
-import vehicle.Vehicle;
+
 
 public class Server {
-  public static void main(String[] args) throws IOException {
-  
+	public static void main(String[] args) throws IOException {
+		Listener app = new Listener("app");	
+		Listener cart = new Listener("cart");
+		cart.start();
+		app.start();
 
-    App app = new App();
-    Vehicle receiver = new Vehicle();
+	}
+} // class
 
-    app.start();
-    receiver.start();
-    // 여기까지하면 이제 3개(main+sender+receiver)의 스레드가 작동하는 멀티스레드 프로그램
-  } // main
+
+
+class Listener extends Thread {
+	static boolean isAppConnected = false;
+	static boolean isCartConnected = false;
+	int DevicePort;
+	ServerSocket socket;
+	static Socket appSocket;
+	static Socket cartSocket;
+	
+	Listener(String device) throws IOException{
+		if(device.equals("app")) DevicePort = 1234;
+		else if(device.equals("cart")) DevicePort = 1235;
+		socket = new ServerSocket(DevicePort);
+	}
+	@Override
+	public void run() {
+		while(true) {
+			try {
+				if(DevicePort == 1234) {
+					System.out.println("App가 생성됨");
+					appSocket = socket.accept();
+					isAppConnected = true;
+					System.out.println("Appsocket : " + DevicePort + "으로 연결되었습니다");
+					System.out.println("App가 접속함 : " + appSocket.getInetAddress() + " " + appSocket.getPort());
+				}
+				else if(DevicePort == 1235) {
+					System.out.println("Cart가 생성됨");
+					cartSocket = socket.accept();
+					isCartConnected = true;
+					System.out.println("Cartsocket : " + DevicePort + "으로 연결되었습니다");
+					System.out.println("Cart가 접속함 : " + cartSocket.getInetAddress() + " " + cartSocket.getPort());
+				}
+				
+				
+				while(true) {
+					while(!(isAppConnected &&  isCartConnected)) {
+						System.out.println(DevicePort + "is waiting");
+					}
+					passMessage(appSocket, cartSocket);
+				}
+			} catch (SocketException e) {
+				System.out.println("socket : " + DevicePort + "으로 연결이 비정상적으로 끊어졌습니다");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+}
+	
+	String getMessage(Socket socketUser) throws IOException {
+		InputStream input = socketUser.getInputStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(input));
+		String identification = br.readLine();
+		return identification;
+	}
+	void sendMessage(Socket socketUser, String message) throws IOException {
+		OutputStream out = socketUser.getOutputStream();
+		PrintWriter pr = new PrintWriter(out,true);
+		pr.println(message);
+		System.out.println(message);
+	}
+	void passMessage(Socket currentUserSocket, Socket targetUserSocket) throws IOException {
+		String message = getMessage(currentUserSocket);
+		sendMessage(targetUserSocket, message);
+	}
 } // class

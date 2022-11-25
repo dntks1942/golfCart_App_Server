@@ -1,0 +1,5 @@
+package chatting_client;
+
+public class ReceiveThread {
+
+}

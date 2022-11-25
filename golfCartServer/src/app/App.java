@@ -22,6 +22,7 @@ public class App extends Thread {
 			System.out.println("Appsocket : " + AppPort + "으로 서버가 열렸습니다");
 			boolean cartConnected = false;
 			boolean appConnected = false;
+			
 			while(true) {
 				socketUser = socket.accept();
 				System.out.println("App가 접속함 : " + socketUser.getInetAddress());
@@ -33,6 +34,7 @@ public class App extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
 	void getMessage(Socket socketUser) throws IOException {
 		InputStream input = socketUser.getInputStream();
 		BufferedReader br = new BufferedReader(new InputStreamReader(input));
