@@ -1,0 +1,67 @@
+package greetingClient;
+
+//File Name GreetingClient.java
+import java.net.*;
+import java.util.Scanner;
+import java.io.*;
+
+public class GreetingClient {
+
+public static void main(String [] args) {
+   
+   int port = 1234;
+   Socket socket = new Socket("192.168.0.110", 1234);
+   
+}
+
+
+class Receiver extends Thread{
+	Socket socket;
+	Receiver(Socket newsocket){
+		socket = newsocket;
+	}
+
+	@Override
+	public void run() {
+		Scanner s = new Scanner(System.in);
+		while(true) {
+			String input = s.next();
+			DataOutputStream out;
+			try {
+				out = new DataOutputStream(socket.getOutputStream());
+				out.writeUTF(input);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+		
+}
+         
+
+class Sender extends Thread{
+	Socket socket;
+	Sender(Socket newsocket){
+		socket = newsocket;
+	}
+	@Override
+	public void run() {
+		while(true) {
+	        DataInputStream in;
+			try {
+				in = new DataInputStream(socket.getInputStream());
+		        String input = in.readUTF();
+		        System.out.println(socket.getInetAddress() + " : " + input);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+}
+
+
+

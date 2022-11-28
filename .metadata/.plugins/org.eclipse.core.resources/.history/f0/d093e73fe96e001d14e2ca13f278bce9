@@ -1,0 +1,99 @@
+package greetingServer;
+
+//File Name GreetingServer.java
+import java.net.*;
+
+
+import java.io.*;
+
+public class GreetingServer extends Thread {
+private ServerSocket serverSocket;
+Socket cartSocket, appSocket;
+boolean isAppReady, isCartReady;
+
+public GreetingServer(int port) throws IOException {
+   serverSocket = new ServerSocket(port);
+
+}
+
+public void run() {
+    Socket cartSocket = null;
+    Socket appSocket = null;
+   while(true) {
+      try {
+         System.out.println("Waiting for client on port " + 
+            serverSocket.getLocalPort() + "...");
+         Socket server = serverSocket.accept();
+
+         System.out.println("Just connected to " + server.getRemoteSocketAddress());
+         DataInputStream in = new DataInputStream(server.getInputStream());
+         
+         String input = in.readUTF();
+         System.out.println(server.getInetAddress() + " : " + input);
+         if(input.equals("app")) {
+        	 isAppReady = true;
+        	 appSocket = server;
+        	 if(isCartReady) {
+                 DataOutputStream outToCart = new DataOutputStream(cartSocket.getOutputStream());
+                 outToCart.writeUTF("App is ready!");
+        	 }
+             DataOutputStream out = new DataOutputStream(server.getOutputStream());
+             if(isCartReady) {
+            	 out.writeUTF("Cart is also ready!");
+             }
+             else {
+            	 out.writeUTF("Cart is not ready yet!");
+             }
+         }
+         
+         else if(input.equals("cart")) {
+        	 isCartReady = true;
+        	 cartSocket = server;
+        	 if(isAppReady) {
+                 DataOutputStream outToApp = new DataOutputStream(appSocket.getOutputStream());
+                 outToApp.writeUTF("Cart is ready!");
+        	 }
+             DataOutputStream out = new DataOutputStream(server.getOutputStream());
+             if(isAppReady) {
+            	 out.writeUTF("App is also ready!");
+             }
+             else {
+            	 out.writeUTF("App is not ready yet!");
+             }
+         }
+         
+         
+         
+         else if(isAppReady && isCartReady){
+        	 if(server.getInetAddress() == appSocket.getInetAddress()) {
+                 DataOutputStream outToCart = new DataOutputStream(cartSocket.getOutputStream());
+                 outToCart.writeUTF(input);
+        	 }
+        	 
+        	 else if(server.getInetAddress() == cartSocket.getInetAddress()) {
+                 DataOutputStream outToCart = new DataOutputStream(appSocket.getOutputStream());
+                 outToCart.writeUTF(input);
+        	 }
+         }
+         server.close();
+         
+      } catch (SocketTimeoutException s) {
+         System.out.println("Socket timed out!");
+         break;
+      } catch (IOException e) {
+         e.printStackTrace();
+         break;
+      }
+   }
+}
+
+public static void main(String [] args) {
+   int port = 1234;
+   try {
+      Thread t = new GreetingServer(port);
+      t.start();
+   } catch (IOException e) {
+      e.printStackTrace();
+   }
+}
+}
