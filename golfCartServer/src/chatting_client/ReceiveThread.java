@@ -21,9 +21,9 @@ public class ReceiveThread extends Thread {
       while (true) {
         receiveString = tmpbuf.readUTF();
         if (receiveString == null) {
-          System.out.println("상대방 연결이 종료되었습니다.");
+          System.out.println(socket.getInetAddress() + " 연결이 종료되었습니다.");
         } else {
-          System.out.println("상대방 : " + receiveString);
+          System.out.println( socket.getInetAddress() + " : " + receiveString);
         }
       }
     } catch (IOException e) {
