@@ -34,8 +34,8 @@ class Listener extends Thread {
 	static Socket cartSocket;
 	
 	Listener(String device) throws IOException{
-		if(device.equals("app")) DevicePort = 1234;
-		else if(device.equals("cart")) DevicePort = 1235;
+		if(device.equals("app")) DevicePort = 12344;
+		else if(device.equals("cart")) DevicePort = 12355;
 		socket = new ServerSocket(DevicePort);
 	}
 	@Override

@@ -48,7 +48,6 @@ class Receiver extends Thread{
 			e.printStackTrace();
 		}
 	}
-		
 }
          
 
